@@ -100,3 +100,4 @@
 *.sim/
 *.runs/
 *.cache/
+*webtalk
