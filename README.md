@@ -21,7 +21,7 @@ TBD
 [Board constraints]
 (https://raw.githubusercontent.com/Digilent/digilent-xdc/master/Basys-3-Master.xdc)
 
-
+FPGA part Number:  **xc7a35tcpg236-1**
 
 ## Pre-configuration
 First of all, it's mandatory to install the board files or, at least, to download the board constraints. The main difference between these two methods is that with the first one, you will have available during the creation phase of the Vivado project all the board characteristics as default, in the same way as Xilinx boards. If the board files are not included into the Vivado directory, you will have to include the chip part number into the project. Nevertheless, it's mandatory to include the constraints board file to link the top layer component to de actual pins on the board.
