@@ -106,3 +106,30 @@ Be careful to use your current Vivado version since small differences could appe
 [TODO]: <> (improve usage of: write_project_tcl and write_bd_tcl)
 
 [TODO]: <> (avoid copy of files from src directory to <project>.srcs/sources_1)
+
+
+### 2_abacus_demo
+
+This project is based on the Abacus Demo from Digilent Inc for the Basys 3 board. Resources:   
+https://reference.digilentinc.com/learn/programmable-logic/tutorials/basys-3-abacus/start
+
+This design includes pushbuttons, LEDs, switches, and seven segments.
+
+**Description:**
+1. Setting Inputs
+The abacus can preform 4 arithmetic functions on two 8-bit numbers.  
+    * Switches 15-8 represent input A.   
+    * Switches 7-0 represent input B.  
+The abacus works by setting the slide switches to your desired operands and then selecting an operation with the buttons.  
+The result will be displayed on the 7 segment display.  
+On startup, the display will read 0.  
+
+
+2. Subtraction - BTNU  
+Subtraction is activated while BTNU is pressed. This function uses the formula A - B. The 7-segment display will show the difference and sign until the user releases BTNU. The result will then start to scroll across the display.
+
+4. Division - BTNR  
+Division is activated while BTNR is pressed. This function uses the formula A / B. The 7-segment display will show the quotient until the user releases BTNR. The display will then return to whatever was last scrolling.
+
+5. Modulo/Remainder - BTNL  
+Modulo is activated while BTNL is pressed. This function uses the formula A % B. The 7-segment display will show the remainder until the user releases BTNL. The display will then return to whatever was last scrolling.
