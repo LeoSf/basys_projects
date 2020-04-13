@@ -26,6 +26,12 @@ https://raw.githubusercontent.com/Digilent/digilent-xdc/master/Basys-3-Master.xd
 ## Pre-configuration
 First of all, it's mandatory to install the board files or, at least, to download the board constraints. The main difference between these two methods is that with the first one, you will have available during the creation phase of the Vivado project all the board characteristics as default, in the same way as Xilinx boards. If the board files are not included into the Vivado directory, you will have to include the chip part number into the project. Nevertheless, it's mandatory to include the constraints board file to link the top layer component to de actual pins on the board.
 
+For additional information and try a first programming step, follow the tutorial:
+https://reference.digilentinc.com/learn/programmable-logic/tutorials/basys-3-programming-guide/start
+
+A more detailed process on how to include the design boards is:  
+https://reference.digilentinc.com/vivado/installing-vivado/start#installing_digilent_board_files
+
 ## Some additional notes
 Each Vivado directory will contain as a standard structure the following directories:
   * src:  to include VHDL, Verilog and C source files
