@@ -113,23 +113,28 @@ Be careful to use your current Vivado version since small differences could appe
 This project is based on the Abacus Demo from Digilent Inc for the Basys 3 board. Resources:   
 https://reference.digilentinc.com/learn/programmable-logic/tutorials/basys-3-abacus/start
 
-This design includes pushbuttons, LEDs, switches, and seven segments.
+This design includes pushbuttons, LEDs, switches, and seven segments. The main modifications made to this example are the use of a general reset signal, and as a consequence, the word length of each number is 7 bits.
 
 **Description:**
 1. Setting Inputs
-The abacus can preform 4 arithmetic functions on two 8-bit numbers.  
-    * Switches 15-8 represent input A.   
-    * Switches 7-0 represent input B.  
+The abacus can preform 4 arithmetic functions on two 7-bit numbers.  
+    * Switches 14-8 represent input A or Number #1.   
+    * Switches 6-0 represent input B or Number #2.  
 The abacus works by setting the slide switches to your desired operands and then selecting an operation with the buttons.  
 The result will be displayed on the 7 segment display.  
 On startup, the display will read 0.  
 
+2. Addition - Button Left  
+Addition is activated while btn_left_i is pressed. This function uses the formula A + B. The 7-segment display will show the difference and sign until the user releases BTNU. The result will then start to scroll across the display.
 
-2. Subtraction - BTNU  
-Subtraction is activated while BTNU is pressed. This function uses the formula A - B. The 7-segment display will show the difference and sign until the user releases BTNU. The result will then start to scroll across the display.
+2. Subtraction - Button Right  
+Subtraction is activated while btn_right_i is pressed. This function uses the formula A - B. The 7-segment display will show the difference and sign until the user releases BTNU. The result will then start to scroll across the display.
 
-4. Division - BTNR  
-Division is activated while BTNR is pressed. This function uses the formula A / B. The 7-segment display will show the quotient until the user releases BTNR. The display will then return to whatever was last scrolling.
+3. Multiplication - Button Up
+Multiplication is activated while btn_up_i is pressed. This function uses the formula A * B. The 7-segment display will show the product until the user releases BTND. The display will then return to whatever >was last scrolling.
 
-5. Modulo/Remainder - BTNL  
-Modulo is activated while BTNL is pressed. This function uses the formula A % B. The 7-segment display will show the remainder until the user releases BTNL. The display will then return to whatever was last scrolling.
+4. Division - Button Down  
+Division is activated while btn_down_i is pressed. This function uses the formula A / B. The 7-segment display will show the quotient until the user releases BTNR. The display will then return to whatever was last scrolling.
+
+5. Modulo/Remainder - Button Center  
+Modulo is activated while btn_center_i is pressed. This function uses the formula A % B. The 7-segment display will show the remainder until the user releases BTNL. The display will then return to whatever was last scrolling.
