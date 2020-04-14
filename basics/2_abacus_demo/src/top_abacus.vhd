@@ -3,14 +3,15 @@
 -- Engineer:            Leandro D. Medus
 --
 -- Create Date:         18:17:00 04/12/2020
--- Design Name:         Logistic Sigmoid 2nd Order Aproximation
+-- Design Name:         Abacus
 -- Module Name:         top - Behavioral
--- Project Name:        0_basics_sw_leds
+-- Project Name:        2_abacus_demo
 -- Target Devices:
 -- Tool versions:       Vivado 2019.1
 -- Description:
 --
 -- Dependencies:
+--      adder.vhd
 --
 -- Revision History:
 --      04/12/2020  v0.01 File created
@@ -43,20 +44,29 @@ entity top is
         -- leds
         led_on_o    : out std_logic;        -- led reset disable
         leds_n1_o      : out std_logic_vector (6 downto 0);
-        leds_n1_o      : out std_logic_vector (6 downto 0)
+        leds_n2_o      : out std_logic_vector (6 downto 0)
     );
 end top;
 
 architecture Behavioral of top is
+    -- signal declarations
+
+    -- module declarations
+
 begin
+    -- module initializations
 
     p_top_behav : process(rst_n_i, clk_i)
     begin
         if rst_n_i = '0' then
             led_on_o <= '0';
-            leds_o <= (others => '0');
+            leds_n1_o <= (others => '0');
+            leds_n2_o <= (others => '0');
         else
-            leds_o <= sw_i;
+            led_on_o <= '1';
+            -- TODO
+            leds_n1_o <= (others => '1');
+            leds_n2_o <= (others => '1');
         end if ;
     end process p_top_behav;
 

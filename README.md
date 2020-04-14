@@ -138,3 +138,6 @@ Division is activated while btn_down_i is pressed. This function uses the formul
 
 5. Modulo/Remainder - Button Center  
 Modulo is activated while btn_center_i is pressed. This function uses the formula A % B. The 7-segment display will show the remainder until the user releases BTNL. The display will then return to whatever was last scrolling.
+
+**Additional notes:**  
+Each button function is associated with specific module development. Also, each module has a testbench.
