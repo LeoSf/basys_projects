@@ -38,7 +38,7 @@ entity adder is
         operand_2_i : in std_logic_vector (g_WORD_WIDTH-1 downto 0);  -- second operand
 
         -- global output signals
-        done_o      : out std_logic;        -- operation complete
+        valid_o      : out std_logic;        -- operation complete
         overflow_o  : out std_logic;        -- overflow flag
         result_o    : out std_logic_vector (g_WORD_WIDTH-1 downto 0)  -- result
     );
@@ -56,18 +56,27 @@ begin
 
     p_top_behav : process(rst_n_i, clk_i)
     begin
-        if rst_n_i = '0' then
-            done_o <= '0';
-            overflow_o <= '0';
-            result_o <= (others => '0');
+        if rising_edge(clk_i) then      -- synchronous reset
+            if rst_n_i = '0' then
+                valid_o <= '0';
+                overflow_o <= '0';
+                result_o <= (others => '0');
+            else
+                -- TBD
+                overflow_o <= '0';
+
+                -- integer signal
+                s_result <= to_integer(unsigned(operand_1_i)) + to_integer(unsigned(operand_2_i));
+
+                --
+                result_o <= std_logic_vector(   to_unsigned(to_integer(unsigned(operand_1_i)) +
+                                                to_integer(unsigned(operand_2_i)), result_o'length));
+                -- TBD: after complete operation
+                valid_o <= '1';
+            end if;  -- end rst_n_i
         else
-            -- TBD
-            s_result <= to_integer(unsigned(operand_1_i)) + to_integer(unsigned(operand_2_i));
-
-            result_o <= std_logic_vector(to_unsigned(to_integer(unsigned(operand_1_i)) + to_integer(unsigned(operand_2_i)), result_o'length));
-
-            done_o <= '1';
-        end if ;
+            -- latching everything
+        end if ;    -- end clk_i
     end process p_top_behav;
 
 end behavioral;
