@@ -116,7 +116,7 @@ begin
             v_number_2 := v_number_2 + 1;
         end loop;
 
-        report "end testbench" severity failure ;
+        report "[msg] Testbench end." severity failure ;
     end process;
 
 end behavioral;
