@@ -27,8 +27,8 @@ use ieee.numeric_std.all;               -- ieee 1076.3
 
 entity top is
     generic (
-        g_WORD_WIDTH    => 7
-    )
+        g_WORD_WIDTH : integer := 7
+    );
     port (
         -- global input signals
         clk_i       : in  std_logic;        -- system clock
