@@ -26,6 +26,12 @@ https://raw.githubusercontent.com/Digilent/digilent-xdc/master/Basys-3-Master.xd
 ## Pre-configuration
 First of all, it's mandatory to install the board files or, at least, to download the board constraints. The main difference between these two methods is that with the first one, you will have available during the creation phase of the Vivado project all the board characteristics as default, in the same way as Xilinx boards. If the board files are not included into the Vivado directory, you will have to include the chip part number into the project. Nevertheless, it's mandatory to include the constraints board file to link the top layer component to de actual pins on the board.
 
+For additional information and try a first programming step, follow the tutorial:
+https://reference.digilentinc.com/learn/programmable-logic/tutorials/basys-3-programming-guide/start
+
+A more detailed process on how to include the design boards is:  
+https://reference.digilentinc.com/vivado/installing-vivado/start#installing_digilent_board_files
+
 ## Some additional notes
 Each Vivado directory will contain as a standard structure the following directories:
   * src:  to include VHDL, Verilog and C source files
@@ -100,3 +106,38 @@ Be careful to use your current Vivado version since small differences could appe
 [TODO]: <> (improve usage of: write_project_tcl and write_bd_tcl)
 
 [TODO]: <> (avoid copy of files from src directory to <project>.srcs/sources_1)
+
+
+### 2_abacus_demo
+
+This project is based on the Abacus Demo from Digilent Inc for the Basys 3 board. Resources:   
+https://reference.digilentinc.com/learn/programmable-logic/tutorials/basys-3-abacus/start
+
+This design includes pushbuttons, LEDs, switches, and seven segments. The main modifications made to this example are the use of a general reset signal, and as a consequence, the word length of each number is 7 bits.
+
+**Description:**
+1. Setting Inputs
+The abacus can preform 4 arithmetic functions on two 7-bit numbers.  
+    * Switches 14-8 represent input A or Number #1.   
+    * Switches 6-0 represent input B or Number #2.  
+The abacus works by setting the slide switches to your desired operands and then selecting an operation with the buttons.  
+The result will be displayed on the 7 segment display.  
+On startup, the display will read 0.  
+
+2. Addition - Button Left  
+Addition is activated while btn_left_i is pressed. This function uses the formula A + B. The 7-segment display will show the difference and sign until the user releases BTNU. The result will then start to scroll across the display.
+
+2. Subtraction - Button Right  
+Subtraction is activated while btn_right_i is pressed. This function uses the formula A - B. The 7-segment display will show the difference and sign until the user releases BTNU. The result will then start to scroll across the display.
+
+3. Multiplication - Button Up
+Multiplication is activated while btn_up_i is pressed. This function uses the formula A * B. The 7-segment display will show the product until the user releases BTND. The display will then return to whatever >was last scrolling.
+
+4. Division - Button Down  
+Division is activated while btn_down_i is pressed. This function uses the formula A / B. The 7-segment display will show the quotient until the user releases BTNR. The display will then return to whatever was last scrolling.
+
+5. Modulo/Remainder - Button Center  
+Modulo is activated while btn_center_i is pressed. This function uses the formula A % B. The 7-segment display will show the remainder until the user releases BTNL. The display will then return to whatever was last scrolling.
+
+**Additional notes:**  
+Each button function is associated with specific module development. Also, each module has a testbench.
