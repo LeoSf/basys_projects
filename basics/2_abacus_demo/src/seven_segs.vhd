@@ -26,9 +26,9 @@ use ieee.numeric_std.all;                       -- ieee 1076.3
 
 entity seven_segs is
     generic(
-        g_N_SEGMENTS    : integer := 4,         -- number of digits
-        g_N_BITS        : integer := 10,        -- word width of number input
-        g_CLK_IN_MHZ    : integer := 50         -- frequency of the input clk
+        g_N_SEGMENTS    : integer := 4;         -- number of digits
+        g_N_BITS        : integer := 10;        -- word width of number input
+        g_CLK_IN_MHZ    : integer := 100         -- frequency of the input clk
     );
     port (
         -- global input signals
@@ -45,26 +45,83 @@ end seven_segs;
 
 architecture behavioral of seven_segs is
     -- constant
-
+    constant c_TMR_CNTR_MAX : std_logic_vector(26 downto 0) := "101111101011110000100000000"; --100,000,000 = clk cycles per second
+    constant c_TMR_VAL_MAX : std_logic_vector(3 downto 0) := "1001"; --9
 
     -- Signals
+    --This is used to determine when the 7-segment display should be
+    --incremented #TODO generics
+    signal tmrCntr : std_logic_vector(26 downto 0) := (others => '0');
+
+    --This counter keeps track of which number is currently being displayed
+    --on the 7-segment. #TODO generics
+    signal tmrVal : std_logic_vector(3 downto 0) := (others => '0');
 
 begin
 
     p_7seg_behav : process(rst_n_i, clk_i)
     begin
-        if rising_edge(clk_i) then      -- synchronous reset
-            if rst_n_i = '0' then
-                SSEG_AN <= (others => '1');
+        if rst_n_i = '0'  then      -- asynchronous reset
+            -- reset signals
+
+
+        elsif rising_edge(clk_i) then
                 -- SSEG_AN <= ----
 
-            else
-
-
-            end if;  -- end rst_n_i
         else
             -- latching everything
-        end if ;    -- end clk_i
+        end if ;    -- end rst_n_i
     end process p_7seg_behav;
+
+    -- Encoding the current value to display to the necessary cathode
+    -- signals to display n the seven segment digit (296)
+    with digit_val select
+    	sseg_ca <=  "01000000" when "0000",
+                    "01111001" when "0001",
+                    "00100100" when "0010",
+                    "00110000" when "0011",
+                    "00011001" when "0100",
+                    "00010010" when "0101",
+                    "00000010" when "0110",
+                    "01111000" when "0111",
+                    "00000000" when "1000",
+                    "00010000" when "1001",
+                    "11111111" when others; -- default: leds off
+
+    --This process controls the counter that triggers the 7-segment
+    --to be incremented. It counts 100,000,000 and then resets.
+    timer_counter_process : process (rst_n_i, clk_i)
+    begin
+        if rst_n_i = '0'  then      -- asynchronous reset
+            tmrCntr <= (others => '0');
+            -- tmrVal <= (others => '0');
+
+        elsif (rising_edge(clk_i)) then
+    		if (tmrCntr = c_TMR_CNTR_MAX) then
+    			tmrCntr <= (others => '0');
+    		else
+    			tmrCntr <= tmrCntr + 1;
+    		end if;
+    	end if;
+    end process;
+
+    --This process increments the digit being displayed on the
+    --7-segment display every second.
+    timer_inc_process : process (rst_n_i, clk_i)
+    begin
+        if rst_n_i = '0'  then      -- asynchronous reset
+            tmrCntr <= (others => '0');
+            -- tmrVal <= (others => '0');
+
+    	elsif (rising_edge(clk_i)) then
+    		if (tmrCntr = c_TMR_CNTR_MAX) then
+    			if (tmrVal = c_TMR_VAL_MAX) then
+    				tmrVal <= (others => '0');
+    			else
+    				tmrVal <= tmrVal + 1;
+    			end if;
+    		end if;
+    	end if;
+    end process;
 
 end behavioral;
