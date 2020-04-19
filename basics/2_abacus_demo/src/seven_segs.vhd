@@ -34,28 +34,31 @@ entity seven_segs is
         -- global input signals
         clk_i           : in std_logic;         -- system clock
         rst_n_i         : in std_logic;         -- global reset (active low)
-        en              : in std_logic;         -- enable signal
+        en_i            : in std_logic;         -- enable signal
         display_value_i : in std_logic_vector (g_N_BITS-1 downto 0);  -- value to be displayed
 
         -- global output signals
-        SSEG_CA 		: out  STD_LOGIC_VECTOR (7 downto 0);
-        SSEG_AN 		: out  STD_LOGIC_VECTOR (g_N_SEGMENTS-1 downto 0)
+        sseg_ca_o 		: out  std_logic_vector (7 downto 0);
+        sseg_an_o 		: out  std_logic_vector (g_N_SEGMENTS-1 downto 0)
     );
 end seven_segs;
 
 architecture behavioral of seven_segs is
     -- constant
-    constant c_TMR_CNTR_MAX : std_logic_vector(26 downto 0) := "101111101011110000100000000"; --100,000,000 = clk cycles per second
-    constant c_TMR_VAL_MAX : std_logic_vector(3 downto 0) := "1001"; --9
+    -- constant c_TMR_CNTR_MAX : std_logic_vector(26 downto 0) := "101111101011110000100000000"; --100,000,000 = clk cycles per second
+    -- constant c_TMR_VAL_MAX : std_logic_vector(3 downto 0) := "1001"; --9
+    constant c_TMR_CNTR_MAX : unsigned(26 downto 0) := "101111101011110000100000000"; --100,000,000 = clk cycles per second
+    constant c_TMR_VAL_MAX : unsigned(3 downto 0) := "1001"; --9
 
     -- Signals
     --This is used to determine when the 7-segment display should be
     --incremented #TODO generics
-    signal tmrCntr : std_logic_vector(26 downto 0) := (others => '0');
+    signal tmrCntr : unsigned(26 downto 0) := (others => '0');
 
     --This counter keeps track of which number is currently being displayed
     --on the 7-segment. #TODO generics
-    signal tmrVal : std_logic_vector(3 downto 0) := (others => '0');
+    -- signal digit_val : std_logic_vector(3 downto 0) := (others => '0');
+    signal digit_val : unsigned (3 downto 0) := (others => '0');
 
 begin
 
@@ -63,11 +66,11 @@ begin
     begin
         if rst_n_i = '0'  then      -- asynchronous reset
             -- reset signals
-
+            sseg_an_o  <= (others => '1');
 
         elsif rising_edge(clk_i) then
-                -- SSEG_AN <= ----
-
+            -- SSEG_AN <= ----
+            sseg_an_o <= (others => '0');
         else
             -- latching everything
         end if ;    -- end rst_n_i
@@ -76,7 +79,7 @@ begin
     -- Encoding the current value to display to the necessary cathode
     -- signals to display n the seven segment digit (296)
     with digit_val select
-    	sseg_ca <=  "01000000" when "0000",
+    	sseg_ca_o <=  "01000000" when "0000",
                     "01111001" when "0001",
                     "00100100" when "0010",
                     "00110000" when "0011",
@@ -94,11 +97,13 @@ begin
     begin
         if rst_n_i = '0'  then      -- asynchronous reset
             tmrCntr <= (others => '0');
+            -- tmrCntr <= 0;
             -- tmrVal <= (others => '0');
 
         elsif (rising_edge(clk_i)) then
     		if (tmrCntr = c_TMR_CNTR_MAX) then
     			tmrCntr <= (others => '0');
+                -- tmrCntr <= 0;
     		else
     			tmrCntr <= tmrCntr + 1;
     		end if;
@@ -110,15 +115,14 @@ begin
     timer_inc_process : process (rst_n_i, clk_i)
     begin
         if rst_n_i = '0'  then      -- asynchronous reset
-            tmrCntr <= (others => '0');
             -- tmrVal <= (others => '0');
 
     	elsif (rising_edge(clk_i)) then
     		if (tmrCntr = c_TMR_CNTR_MAX) then
-    			if (tmrVal = c_TMR_VAL_MAX) then
-    				tmrVal <= (others => '0');
+    			if (digit_val = c_TMR_VAL_MAX) then
+    				digit_val <= (others => '0');
     			else
-    				tmrVal <= tmrVal + 1;
+    				digit_val <= digit_val + 1;
     			end if;
     		end if;
     	end if;
