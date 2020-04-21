@@ -74,7 +74,9 @@ architecture behavioral of seven_segs is
     signal display_id : unsigned (4 downto 0);
 
 
-    signal values_bcd   : std_logic_vector ((g_N_SEGMENTS * 4 - 1) downto 0);
+    signal values_bcd_module   : std_logic_vector ((g_N_SEGMENTS * 4 - 1) downto 0);
+    signal s_values_bcd   : std_logic_vector ((g_N_SEGMENTS * 4 - 1) downto 0);
+
     signal module_ena   : std_logic;
     signal module_busy  : std_logic;
 begin
@@ -87,10 +89,10 @@ begin
     port map (
         clk         => clk_i,
         reset_n     => rst_n_i,
-        ena         => module_ena,
+        ena         => en_i,
         binary      => value_i,
         busy        => module_busy,
-        bcd         => values_bcd
+        bcd         => values_bcd_module
     );
 
 
@@ -109,26 +111,31 @@ begin
             sseg_an_o  <= (others => '1');
 
         elsif rising_edge(clk_i) then
-            sseg_an_o <= s_sseg_anodes;
+            -- sseg_an_o <= s_sseg_anodes;
+
+            if module_busy = '0' then
+                sseg_an_o <= s_sseg_anodes;
+                s_values_bcd <= values_bcd_module;
+            end if;
         else
             -- latching everything
         end if ;    -- end rst_n_i
     end process p_7seg_behav;
 
-    -- with display_id select
-    --     digit_val <=    values_bcd(3 downto 0) when "00",
-    --                     values_bcd(7 downto 4) when "01",
-    --                     values_bcd(11 downto 8) when "10",
-    --                     values_bcd(15 downto 12) when "11",
-    --                     "1111" when others;  -- default: leds off
-
-    -- asignación del valor bcd según el dígito activo
     with display_id select
-        digit_val <=    std_logic_vector(to_unsigned(4, 4)) when "0000",
-                        std_logic_vector(to_unsigned(3, 4)) when "0001",
-                        std_logic_vector(to_unsigned(2, 4)) when "0010",
-                        std_logic_vector(to_unsigned(1, 4)) when "0011",
+        digit_val <=    s_values_bcd(3 downto 0) when "0000",
+                        s_values_bcd(7 downto 4) when "0001",
+                        s_values_bcd(11 downto 8) when "0010",
+                        s_values_bcd(15 downto 12) when "0011",
                         "1111" when others;  -- default: leds off
+
+    -- asignación del valor bcd según el dígito activo [test]
+    -- with display_id select
+    --     digit_val <=    std_logic_vector(to_unsigned(4, 4)) when "0000",
+    --                     std_logic_vector(to_unsigned(3, 4)) when "0001",
+    --                     std_logic_vector(to_unsigned(2, 4)) when "0010",
+    --                     std_logic_vector(to_unsigned(1, 4)) when "0011",
+    --                     "1111" when others;  -- default: leds off
 
     -- anodes activation as a function of the active seven segment
     with display_id select
