@@ -41,7 +41,7 @@ entity seven_segs is
         rst_n_i         : in std_logic;         -- global reset (active low)
         en_i            : in std_logic;         -- enable signal
         value_i         : in std_logic_vector (g_N_BITS-1 downto 0);  -- value to be displayed
-        dp_i           : in std_logic_vector (g_N_SEGMENTS-1 downto 0)
+        dp_i            : in std_logic_vector (g_N_SEGMENTS-1 downto 0);
 
         -- global output signals
         sseg_ca_o 		: out  std_logic_vector (7 downto 0);
@@ -52,34 +52,42 @@ end seven_segs;
 architecture behavioral of seven_segs is
     -- constant
     -- timer max counter for a 1 MHz clock: 100,000,000 = clk cycles per second
-    constant c_TMR_CNTR_MAX : unsigned(26 downto 0) := "101111101011110000100000000";
+    -- constant c_TMR_CNTR_MAX : unsigned(26 downto 0) := "101111101011110000100000000";
+    constant c_TMR_CNTR_MAX : unsigned(26 downto 0) := to_unsigned(100000, 27);
     -- max value to display in the 7-seg: 9
-    constant c_TMR_VAL_MAX : unsigned(3 downto 0) := "1001";
+    -- constant c_TMR_VAL_MAX : unsigned(3 downto 0) := "1001";
+    constant c_TMR_VAL_MAX : unsigned(3 downto 0) := to_unsigned(9, 4);
 
     -- Signals
     --This is used to determine when the 7-segment display should be
     --incremented #TODO generics
-    signal tmrCntr : unsigned(26 downto 0) := (others => '0');
+    signal tmrCntr : unsigned(26 downto 0);
 
     --This counter keeps track of which number is currently being displayed
     --on the 7-segment. #TODO generics
-    signal digit_val : unsigned (3 downto 0) := (others => '0');
+    signal digit_val : std_logic_vector (3 downto 0);
 
 
-    signal values_bcd   :	std_logic_vector (g_N_SEGMENTS * 4 - 1 DOWNTO 0));
+    signal s_sseg_anodes : std_logic_vector (3 downto 0);
+
+
+    signal display_id : unsigned (4 downto 0);
+
+
+    signal values_bcd   : std_logic_vector ((g_N_SEGMENTS * 4 - 1) downto 0);
     signal module_ena   : std_logic;
     signal module_busy  : std_logic;
 begin
 
     ADDER0: entity work.binary_to_bcd
     generic map(
-        bits    => g_N_BITS;
+        bits    => g_N_BITS,
         digits  => g_N_SEGMENTS
     )
     port map (
         clk         => clk_i,
         reset_n     => rst_n_i,
-        ena         => open,
+        ena         => module_ena,
         binary      => value_i,
         busy        => module_busy,
         bcd         => values_bcd
@@ -87,18 +95,57 @@ begin
 
 
     p_7seg_behav : process(rst_n_i, clk_i)
+        variable upper_slice : integer;
+        variable lower_slice : integer;
+
+        variable upper_slice_i : integer := 3;
+        variable lower_slice_i : integer := 0;
+
+        variable upper_slice_u : natural := 3;
+        variable lower_slice_u : natural := 0;
     begin
         if rst_n_i = '0'  then      -- asynchronous reset
             -- reset signals
             sseg_an_o  <= (others => '1');
 
         elsif rising_edge(clk_i) then
-            -- SSEG_AN <= ----
-            sseg_an_o <= (others => '0');
+            sseg_an_o <= s_sseg_anodes;
         else
             -- latching everything
         end if ;    -- end rst_n_i
     end process p_7seg_behav;
+
+    -- with display_id select
+    --     digit_val <=    values_bcd(3 downto 0) when "00",
+    --                     values_bcd(7 downto 4) when "01",
+    --                     values_bcd(11 downto 8) when "10",
+    --                     values_bcd(15 downto 12) when "11",
+    --                     "1111" when others;  -- default: leds off
+
+    -- asignación del valor bcd según el dígito activo
+    with display_id select
+        digit_val <=    std_logic_vector(to_unsigned(4, 4)) when "0000",
+                        std_logic_vector(to_unsigned(3, 4)) when "0001",
+                        std_logic_vector(to_unsigned(2, 4)) when "0010",
+                        std_logic_vector(to_unsigned(1, 4)) when "0011",
+                        "1111" when others;  -- default: leds off
+
+    -- anodes activation as a function of the active seven segment
+    with display_id select
+        s_sseg_anodes <=    "1110" when "0000",
+                            "1101" when "0001",
+                            "1011" when "0010",
+                            "0111" when "0011",
+                            "1111" when others;  -- default: leds off
+
+
+
+    -- with display_id select
+    --     digit_val <=    values_bcd(3 downto 0) when "00" and  module_busy = '0',
+    --                     values_bcd(7 downto 4) when "01" and  module_busy = '0',
+    --                     values_bcd(11 downto 8) when "10" and  module_busy = '0',
+    --                     values_bcd(15 downto 12) when "11" and  module_busy = '0',
+    --                     "1111" when others;  -- default: leds off
 
     -- Encoding the current value to display to the necessary cathode
     -- signals to display n the seven segment digit (296)
@@ -138,14 +185,14 @@ begin
     digit_inc_process : process (rst_n_i, clk_i)
     begin
         if rst_n_i = '0'  then      -- asynchronous reset
-            digit_val <= (others => '0');
+            display_id <= (others => '0');
 
     	elsif (rising_edge(clk_i)) then
     		if (tmrCntr = c_TMR_CNTR_MAX) then
-    			if (digit_val = c_TMR_VAL_MAX) then
-    				digit_val <= (others => '0');
+    			if (display_id = c_TMR_VAL_MAX) then
+    				display_id <= (others => '0');
     			else
-    				digit_val <= digit_val + 1;
+    				display_id <= display_id + 1;
     			end if;
     		end if;
     	end if;

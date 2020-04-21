@@ -76,7 +76,7 @@ begin
         overflow_o      => open
     );
 
-    LEDS0: entity work.seven_segs
+    SEVENSEGS: entity work.seven_segs
     generic map(
         g_N_SEGMENTS    => 4,
         g_N_BITS        => 10,
@@ -86,7 +86,8 @@ begin
         clk_i           => clk_i,
         rst_n_i         => rst_n_i,
         en_i            => '1',
-        display_value_i => (others => '1'),
+        dp_i            => (others => '1'),
+        value_i         => std_logic_vector(to_unsigned(1023, 10)), --
         sseg_ca_o       => sseg_ca_o,
         sseg_an_o       => sseg_an_o
     );

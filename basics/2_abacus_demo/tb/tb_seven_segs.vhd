@@ -77,12 +77,13 @@ begin
         g_CLK_IN_MHZ    => 100
     )
     port map (
-        clk_i           => s_clk,
-        rst_n_i         => s_rst_n,
-        en_i             => s_en,
-        display_value_i => (others => '1'),
-        sseg_ca_o       => s_sseg_katodes,
-        sseg_an_o       => s_sseg_anodes
+        clk_i       => s_clk,
+        rst_n_i     => s_rst_n,
+        en_i        => s_en,
+        dp_i        => (others => '1'),
+        value_i     => std_logic_vector(to_unsigned(1023, 10)),
+        sseg_ca_o   => s_sseg_katodes,
+        sseg_an_o   => s_sseg_anodes
     );
 
     -- Clock process definitions
@@ -106,7 +107,7 @@ begin
         s_en <= '1';
 
 
-        wait for 10000 ms;
+        wait for 10000 ns;
         report "[msg] Testbench end." severity failure ;
     end process;
 
