@@ -87,7 +87,7 @@ begin
         rst_n_i         => rst_n_i,
         en_i            => '1',
         dp_i            => (others => '1'),
-        value_i         => "000" & sw_n2_i, --
+        value_i         => "000" & s_result_sum,
         sseg_ca_o       => sseg_ca_o,
         sseg_an_o       => sseg_an_o
     );
