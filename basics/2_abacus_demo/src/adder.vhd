@@ -56,7 +56,7 @@ architecture behavioral of adder is
     signal s_result     : integer range 0 to c_MAX_VALUE;
 begin
 
-    p_top_behav : process(rst_n_i, clk_i)
+    p_adder_behav : process(rst_n_i, clk_i)
     begin
         if rising_edge(clk_i) then      -- synchronous reset
             if rst_n_i = '0' then
@@ -81,6 +81,6 @@ begin
         else
             -- latching everything
         end if ;    -- end clk_i
-    end process p_top_behav;
+    end process p_adder_behav;
 
 end behavioral;

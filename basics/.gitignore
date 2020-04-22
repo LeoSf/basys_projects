@@ -101,3 +101,5 @@
 *.runs/
 *.cache/
 *webtalk
+
+*/*.ip_user_files/README.txt
