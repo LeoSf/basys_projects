@@ -1,61 +1,53 @@
 ----------------------------------------------------------------------------------
--- Company: 
+-- Company:
 -- Engineer: Leandro D. Medus
--- 
--- Create Date:    18:04:10 07/12/2014 
--- Design Name: 
--- Module Name:    flanco - arch 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
 --
--- Dependencies: 
+-- Create Date:    18:04:10 07/12/2014
+-- Design Name:
+-- Module Name:    edge_detector - arch
+-- Project Name:
+-- Target Devices:
+-- Tool versions:
+-- Description:
 --
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
+-- Dependencies:
+--
+-- Revision History:
+--      07/12/2014  v0.01   File created
+--      04/24/2020  v1.0    Standard names
+--
+-- Additional Comments:
 --
 ----------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
-entity flanco is
-    Port ( 
-		clk 		: in  std_logic;	-- clk para circuitos secuenciales
-		rst_n 		: in  std_logic;	-- reset activo  por bajo
-		config_re	: in  std_logic;	-- configuración del módulo: 	config_re = 1 - rising edge
-										--								config_re = 0 - falling edge
-        signal_in 	: in  std_logic;
-        signal_re 	: out std_logic
+entity edge_detector is
+    Port (
+		clk_i 		: in  std_logic;	-- clk_i para circuitos secuenciales
+		rst_n_i 	: in  std_logic;	-- reset activo  por bajo
+		edge_cfg_i	: in  std_logic;	-- configuraciÃ³n del mÃ³dulo: 	edge_cfg_i = 1 - rising edge
+										--								edge_cfg_i = 0 - falling edge
+        signal_i 	: in  std_logic;    -- input signal
+        edge_o 	    : out std_logic     -- edge detecion
 	);
-end flanco;
+end edge_detector;
 
-architecture arch of flanco is
-	signal buf : std_logic_vector(1 downto 0);
+architecture behavioral of edge_detector is
+	signal s_buff : std_logic_vector(1 downto 0);
 begin
 
-	process (clk, rst_n, signal_in)
+    p_detector_behav : process (clk_i, rst_n_i, signal_i)
 	begin
-		if rst_n = '0' then
-			buf <= "00";
-		elsif clk'event and clk='1' then
-			buf(1) <= buf(0);
-			buf(0) <= signal_in; 
+		if rst_n_i = '0' then
+			s_buff <= "00";
+		elsif clk_i'event and clk_i='1' then
+			s_buff(1) <= s_buff(0);
+			s_buff(0) <= signal_i;
 		end if;
 	end process;
-	
-	signal_re <= 	'1' when	(config_re = '1' and buf = "01") or
-								(config_re = '0' and buf = "10") else 
-					'0';
-end arch;
 
+	edge_o <= 	'1' when    (edge_cfg_i = '1' and s_buff = "01") or
+                            (edge_cfg_i = '0' and s_buff = "10")
+                            else '0';
+end behavioral;

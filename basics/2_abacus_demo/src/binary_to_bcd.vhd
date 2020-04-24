@@ -29,19 +29,19 @@ USE ieee.std_logic_1164.all;
 
 ENTITY binary_to_bcd IS
 	GENERIC(
-		bits		:	INTEGER := 10;		--size of the binary input numbers in bits
+		bits	:	INTEGER := 10;		--size of the binary input numbers in bits
 		digits	:	INTEGER := 3);		--number of BCD digits to convert to
 	PORT(
 		clk		:	IN		STD_LOGIC;											--system clock
 		reset_n	:	IN		STD_LOGIC;											--active low asynchronus reset
 		ena		:	IN		STD_LOGIC;											--latches in new binary number and starts conversion
-		binary	:	IN		STD_LOGIC_VECTOR(bits-1 DOWNTO 0);			--binary number to convert
+		binary	:	IN		STD_LOGIC_VECTOR(bits-1 DOWNTO 0);					--binary number to convert
 		busy		:	OUT	STD_LOGIC;											--indicates conversion in progress
-		bcd		:	OUT	STD_LOGIC_VECTOR(digits*4-1 DOWNTO 0));	--resulting BCD number
+		bcd		:	OUT	STD_LOGIC_VECTOR(digits*4-1 DOWNTO 0));					--resulting BCD number
 END binary_to_bcd;
 
 ARCHITECTURE logic OF binary_to_bcd IS
-	TYPE		machine IS(idle, convert);												--needed states
+	TYPE	machine IS(idle, convert);												--needed states
 	SIGNAL	state     			:  machine;											--state machine
 	SIGNAL	binary_reg			:	STD_LOGIC_VECTOR(bits-1 DOWNTO 0);		--latched in binary number
 	SIGNAL	bcd_reg				:	STD_LOGIC_VECTOR(digits*4-1 DOWNTO 0);	--bcd result register
@@ -55,7 +55,7 @@ ARCHITECTURE logic OF binary_to_bcd IS
 			reset_n	:	IN			STD_LOGIC;
 			ena		:	IN			STD_LOGIC;
 			binary	:	IN			STD_LOGIC;
-			c_out		:	BUFFER	STD_LOGIC;
+			c_out	:	BUFFER	STD_LOGIC;
 			bcd		:	BUFFER	STD_LOGIC_VECTOR(3 DOWNTO 0));
 	END COMPONENT binary_to_bcd_digit;
 
